@@ -34,6 +34,7 @@ const NavbarContent: React.FC<NavbarContentProps> = () => {
         <NavToggle />
         <ModeDropdown />
       </div> */}
+
       {renderNavbar()}
     </div>
   )

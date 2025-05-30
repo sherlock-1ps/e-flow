@@ -121,10 +121,10 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
         <SubMenu label={'จัดการงาน'} className='mt-4 p-4 rounded-lg bg-white shadow-lg'>
-          <MenuItem href={`/${locale}/user/dashboard`} icon={<Task style={{ width: '20px', height: '20px' }} />}>
+          <MenuItem href={`/${locale}/workflow/dashboard`} icon={<Task style={{ width: '20px', height: '20px' }} />}>
             งานของฉัน
           </MenuItem>
-          <MenuItem href={`/${locale}/user/createTask`} icon={<Add style={{ width: '20px', height: '20px' }} />}>
+          {/* <MenuItem href={`/${locale}/user/createTask`} icon={<Add style={{ width: '20px', height: '20px' }} />}>
             สร้างงานใหม่
           </MenuItem>
           <Divider className='my-2' />
@@ -133,16 +133,17 @@ const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
           </MenuItem>
           <MenuItem href={`/${locale}/user/allTask`} icon={<ViewList style={{ width: '20px', height: '20px' }} />}>
             งานทั้งหมด
-          </MenuItem>
+          </MenuItem> */}
         </SubMenu>
         <SubMenu label={'การจัดการ'} className='mt-4 p-4 rounded-lg bg-white shadow-lg'>
           <MenuItem
-            href={`/${locale}/admin/dashboard`}
+            // href={`/${locale}/admin/dashboard`}
+            href={`https://e-form-iota.vercel.app/${locale}/admin/dashboard`}
             icon={<InsertDriveFile style={{ width: '20px', height: '20px' }} />}
           >
             จัดการแบบฟอร์ม
           </MenuItem>
-          <MenuItem href={`/${locale}/workflow`} icon={<AccountTree style={{ width: '20px', height: '20px' }} />}>
+          <MenuItem href={`/${locale}/admin/workflow`} icon={<AccountTree style={{ width: '20px', height: '20px' }} />}>
             จัดการเวิร์กโฟลว์
           </MenuItem>
           {/* <MenuItem href='/workflow' icon={<SmsFailed style={{ width: '20px', height: '20px' }} />}>

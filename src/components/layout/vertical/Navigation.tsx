@@ -31,6 +31,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 // Style Imports
 import navigationCustomStyles from '@core/styles/vertical/navigationCustomStyles'
 import ToolboxFormNavigation from './ToolboxFormNavigation/ToolboxFormNavigation'
+import ToolboxFlowNavigation from './ToolboxFlowNavigation/ToolboxFlowNavigation'
 import { IconButton } from '@mui/material'
 import { Home, NotificationAddOutlined, SupervisedUserCircleOutlined } from '@mui/icons-material'
 import CustomAvatar from '@/@core/components/mui/Avatar'
@@ -144,13 +145,15 @@ const Navigation = (props: Props) => {
   const renderNavigationContent = useMemo(() => {
     if (pathname.includes('/admin/form')) {
       return <ToolboxFormNavigation />
+    } else if (pathname.includes('/admin/workflow')) {
+      return <ToolboxFlowNavigation />
     } else {
       return <VerticalMenu scrollMenu={scrollMenu} dictionary={dictionary} />
     }
   }, [pathname])
 
   const renderNavigationMenu = useMemo(() => {
-    if (pathname.includes('/draftform')) {
+    if (pathname.includes('/draftform') || pathname.includes('/admin/workflow')) {
       return null
     } else {
       return (

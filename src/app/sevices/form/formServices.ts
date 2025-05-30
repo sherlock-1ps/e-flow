@@ -470,4 +470,79 @@ export const deleteUploadFile = async ({ id }: { id: number }) => {
 }
 
 
+export const fetchFlow = async ({ page, pageSize }: { page: number; pageSize: number }) => {
+  try {
+    const response = await Axios.post("/flows/list", {
+      page,
+      limit: pageSize,
+    });
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error fetch flow:", error);
+
+    axiosErrorHandler(error, '/flows/list')
+    throw error;
+
+  }
+
+};
+
+export const deleteFlow = async ({ id }: { id: number }) => {
+  try {
+
+    const response = await Axios.post("/flows/delete", { id });
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error delete flow:", error);
+
+    const e = axiosErrorHandler(error, '/flows/delete')
+    throw e;
+
+  }
+
+};
+
+export const updateDateFlow = async ({ request }: { request: any }) => {
+  try {
+    const response = await Axios.post("/flows/public/update", request);
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error update date flow:", error);
+
+    const e = axiosErrorHandler(error, '/flows/public/update')
+    throw e;
+
+  }
+
+};
+
+export const createFlow = async (request: any) => {
+  try {
+    const response = await Axios.post("/flows/create", request)
+    return response.data
+  } catch (error) {
+    console.error("Error create flow:", error)
+    const e = axiosErrorHandler(error, "/flows/create")
+    throw e
+  }
+}
+
+export const getFlow = async (id: number) => {
+  try {
+    const response = await Axios.post("/flows/get", { id })
+    return response.data
+  } catch (error) {
+    console.error("Error get flow:", error)
+    const e = axiosErrorHandler(error, "/flows/get")
+    throw e
+  }
+}
+
+
 

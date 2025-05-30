@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { changeRoleAccount, createOperator, fetchAccount, searchAccount, updateStatusAccount } from '@/app/sevices/account/account';
-import { changeNameFolder, changeNameImage, createApi, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchForm, fetchMedia, fetchVariable, getForm, getUploadFile, updateApi, updateDateForm, updateFile, updateForm, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
+import { changeNameFolder, changeNameImage, createApi, createFlow, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFlow, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchFlow, fetchForm, fetchMedia, fetchVariable, getFlow, getForm, getUploadFile, updateApi, updateDateFlow, updateDateForm, updateFile, updateForm, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 
@@ -79,20 +79,7 @@ export const useUpdateFormQueryOption = () => {
   });
 };
 
-export const useDeleteFormQueryOption = () => {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: deleteForm,
-    onError: (error) => {
-      console.error("Error delete form:", error);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["form"] });
-    },
-
-  });
-};
 
 
 export function useFetchVariableQueryOption(page: number, pageSize: number) {
@@ -356,6 +343,76 @@ export const useDeleteFileQueryOption = () => {
 
   });
 };
+
+
+export function useFetchFlowQueryOption(page: number, pageSize: number) {
+  return useQuery({
+    queryKey: ["flow"],
+    queryFn: () => fetchFlow({ page, pageSize }),
+  });
+}
+
+export const useDeleteFlowQueryOption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteFlow,
+    onError: (error) => {
+      console.error("Error delete flow:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["flow"] });
+    },
+
+  });
+};
+
+export const useUpdateDateFlowQueryOption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateDateFlow,
+    onError: (error) => {
+      console.error("Error update date flow:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["flow"] });
+    },
+
+
+  });
+};
+
+export const useCreateFlowQueryOption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createFlow,
+    onError: (error) => {
+      console.error("Error create flow:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["flow"] });
+    },
+
+
+  });
+};
+
+export const useGetFlowQueryOption = () => {
+
+  return useMutation({
+    mutationFn: getFlow,
+    onError: (error) => {
+      console.error("Error get flow:", error);
+    },
+
+
+  });
+};
+
+
+
 
 
 

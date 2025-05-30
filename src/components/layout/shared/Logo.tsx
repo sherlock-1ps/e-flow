@@ -82,7 +82,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
         isBreakpointReached={isBreakpointReached}
       >
         {/* {themeConfig.templateName} */}
-        Sarabun
+        E-Flow
       </LogoText>
     </div>
   )

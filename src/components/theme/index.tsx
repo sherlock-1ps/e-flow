@@ -118,7 +118,7 @@ const ThemeProvider = (props: Props) => {
           <CssBaseline />
           <div
             style={{
-              background: pathName.includes('/admin/form')
+              background: pathName.includes('/admin/workflow')
                 ? '#E9EAEF'
                 : 'linear-gradient(to right, #47B0FF, #2D78DB, #1E69CB)'
             }}

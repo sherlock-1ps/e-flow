@@ -19,6 +19,7 @@ import {
   Typography
 } from '@mui/material'
 import { useParams, useRouter } from 'next/navigation'
+import NavToggle from '../NavToggle'
 
 const DashboardNavbarContent = () => {
   const router = useRouter()
@@ -27,18 +28,11 @@ const DashboardNavbarContent = () => {
   return (
     <Card>
       <CardContent className='flex gap-2 items-center justify-end'>
-        <Button variant='contained' className='capitalize' startIcon={<InsertDriveFileOutlined />}>
+        {/* <NavToggle /> */}
+        <Button variant='contained' className='capitalize' startIcon={<InsertDriveFileOutlined />} color='secondary'>
           จัดการแบบฟอร์ม
         </Button>
-        <Button
-          color='secondary'
-          variant='contained'
-          className='capitalize'
-          startIcon={<AccountTreeOutlined />}
-          onClick={() => {
-            router.push(`/${locale}/workflow`)
-          }}
-        >
+        <Button variant='contained' className='capitalize' startIcon={<AccountTreeOutlined />}>
           จัดการเวิร์กโฟลว์
         </Button>
       </CardContent>

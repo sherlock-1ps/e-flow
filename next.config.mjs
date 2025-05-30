@@ -6,13 +6,13 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/th/user/dashboard',
+        destination: '/th/workflow/dashboard',
         permanent: true,
         locale: false
       },
       {
         source: '/:lang(th|en|fr|ar)',
-        destination: '/:lang/user/dashboard',
+        destination: '/:lang/workflow/dashboard',
         permanent: true,
         locale: false
       },

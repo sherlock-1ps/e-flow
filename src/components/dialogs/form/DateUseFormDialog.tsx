@@ -8,8 +8,8 @@ import { useDialog } from '@/hooks/useDialog'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { useState } from 'react'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
-import { useUpdateDateFormFormQueryOption } from '@/queryOptions/form/formQueryOptions'
 import { toast } from 'react-toastify'
+import { useUpdateDateFlowQueryOption } from '@/queryOptions/form/formQueryOptions'
 
 interface DateUseProps {
   id: string
@@ -20,7 +20,7 @@ const DateUseFormDialog = ({ id, data }: DateUseProps) => {
   const { closeDialog } = useDialog()
   const [startDatetime, setStartDatetime] = useState<Date | null | undefined>(null)
   const [endDatetime, setEndDatetime] = useState<Date | null | undefined>(null)
-  const { mutateAsync } = useUpdateDateFormFormQueryOption()
+  const { mutateAsync } = useUpdateDateFlowQueryOption()
 
   const handleSubmit = async () => {
     try {

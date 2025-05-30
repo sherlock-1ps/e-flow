@@ -11,6 +11,7 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
+import { usePathname } from 'next/navigation'
 
 // Styled Component Imports
 import StyledMain from '@layouts/styles/shared/StyledMain'
@@ -18,6 +19,7 @@ import StyledMain from '@layouts/styles/shared/StyledMain'
 const LayoutContent = ({ children }: ChildrenType) => {
   // Hooks
   const { settings } = useSettings()
+  const pathname = usePathname()
 
   // Vars
   const contentCompact = settings.contentWidth === 'compact'
@@ -25,6 +27,7 @@ const LayoutContent = ({ children }: ChildrenType) => {
 
   return (
     <StyledMain
+      pathname={pathname}
       isContentCompact={contentCompact}
       className={classnames(verticalLayoutClasses.content, 'flex-auto', {
         [`${verticalLayoutClasses.contentCompact} is-full`]: contentCompact,

@@ -9,6 +9,7 @@ import { useState } from 'react'
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
 import { useParams, useRouter } from 'next/navigation'
 import { useFormStore } from '@/store/useFormStore'
+import { useFlowStore } from '@/store/useFlowStore'
 
 interface createFormProps {
   id: string
@@ -57,12 +58,14 @@ const CreateFormDialog = ({ id, onClick }: createFormProps) => {
   const router = useRouter()
   const { closeDialog } = useDialog()
   const { lang: locale } = useParams()
-  const createForm = useFormStore(state => state.createForm)
+  const createFlow = useFlowStore(state => state.createFlow)
+  const clearSelectedField = useFlowStore(state => state.clearSelectedField)
 
   const handleCreateNewForm = () => {
     const shortId = Date.now().toString(36) // แปลง timestamp เป็น id สั้น
-    createForm(shortId, '1.0.0')
-    router.push(`/${locale}/admin/form`)
+    createFlow(shortId, '1.0.0')
+    clearSelectedField()
+    router.push(`/${locale}/admin/workflow`)
     closeDialog(id)
   }
 
@@ -70,7 +73,7 @@ const CreateFormDialog = ({ id, onClick }: createFormProps) => {
     <Grid container spacing={4}>
       <Grid item xs={12}>
         <Typography variant='h5' className=''>
-          สร้างฟอร์มใหม่ | e-Form
+          สร้างโฟลว์ใหม่ | e-Flow
         </Typography>
       </Grid>
 
@@ -82,7 +85,7 @@ const CreateFormDialog = ({ id, onClick }: createFormProps) => {
         {/* <Typography variant='h6'>เลือกเทมเพลต</Typography> */}
       </Grid>
       <div className='flex items-center justify-center gap-4 flex-wrap w-full mt-4'>
-        <FormCard title='ฟอร์มว่าง' isEmpty onClick={handleCreateNewForm} />
+        <FormCard title='โฟลว์ว่าง' isEmpty onClick={handleCreateNewForm} />
         {/* <FormCard title='ใบจัดซื้อ' image='/images/test/test01.png' onClick={() => console.log('Open form')} /> */}
       </div>
     </Grid>
