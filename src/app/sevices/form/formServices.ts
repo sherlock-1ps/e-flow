@@ -533,6 +533,28 @@ export const createFlow = async (request: any) => {
   }
 }
 
+export const updateFlow = async (request: any) => {
+  try {
+    const response = await Axios.post("/flows/update", request)
+    return response.data
+  } catch (error) {
+    console.error("Error update flow:", error)
+    const e = axiosErrorHandler(error, "/flows/update")
+    throw e
+  }
+}
+
+export const updateVersion = async (request: any) => {
+  try {
+    const response = await Axios.post("/flows/versions/create", request)
+    return response.data
+  } catch (error) {
+    console.error("Error update version:", error)
+    const e = axiosErrorHandler(error, "/flows/versions/create")
+    throw e
+  }
+}
+
 export const getFlow = async (id: number) => {
   try {
     const response = await Axios.post("/flows/get", { id })

@@ -13,8 +13,8 @@ import CreateFormDialog from '@/components/dialogs/form/CreateFormDialog'
 import OptionMenu from '@/@core/components/option-menu'
 import { Edit, FileCopy, EditCalendar, Delete, CreateNewFolder, AccountTreeOutlined } from '@mui/icons-material'
 import ConfirmAlert from '@/components/dialogs/alerts/ConfirmAlert'
-import EditVersionFormDialog from '@/components/dialogs/form/EditVersionFormDialog'
-import DateUseFormDialog from '@/components/dialogs/form/DateUseFormDialog'
+import EditVersionFlowDialog from '@/components/dialogs/flow/EditVersionFlowDialog'
+import DateUseFlowDialog from '@/components/dialogs/flow/DateUseFlowDialog'
 import {
   useDeleteFlowQueryOption,
   useFetchFlowQueryOption,
@@ -67,8 +67,8 @@ const WorkflowComponent = () => {
                 className: 'text-secondary',
                 onClick: () => {
                   showDialog({
-                    id: 'alertEditVersionFormDialog',
-                    component: <EditVersionFormDialog id='alertEditVersionFormDialog' data={data} onClick={() => {}} />,
+                    id: 'alertEditVersionFlowDialog',
+                    component: <EditVersionFlowDialog id='alertEditVersionFlowDialog' data={data} onClick={() => {}} />,
                     size: 'sm'
                   })
                 }
@@ -81,8 +81,8 @@ const WorkflowComponent = () => {
                 className: 'text-secondary',
                 onClick: () => {
                   showDialog({
-                    id: 'alertDateUseFormDialog',
-                    component: <DateUseFormDialog id='alertDateUseFormDialog' data={data} />,
+                    id: 'alertDateUseFlowDialog',
+                    component: <DateUseFlowDialog id='alertDateUseFlowDialog' data={data} />,
                     size: 'sm'
                   })
                 }
@@ -164,14 +164,15 @@ const WorkflowComponent = () => {
           isContinue: true,
           versionId: data?.version[0]?.id,
           name: data?.name,
+          flowId: data?.id,
           version: response?.result?.data?.flow_version?.version,
           newVersion: '',
+          publicDate: '',
+          endDate: '',
           flow: {
             ...response?.result?.data?.flow
           }
         }
-
-        console.log('eweqeqeqeqeqeqeq', result.flow)
 
         setFullFlow(result)
         router.push(`/${locale}/admin/workflow`)

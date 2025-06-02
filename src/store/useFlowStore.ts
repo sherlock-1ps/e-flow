@@ -3,9 +3,12 @@ import { persist } from 'zustand/middleware'
 
 type Flow = {
   name: string
+  flowId: string | number
   version: string | number
   newVersion: string | number
   versionId: string | number
+  publicDate: string
+  endDate: string
   isContinue: boolean
   flow: {
     nodeDataArray: any[]
@@ -31,6 +34,7 @@ type FlowState = {
 
   setNodeDataArray: (nodes: any[]) => void
   setLinkDataArray: (links: any[]) => void
+  pushLinkData: (link: any) => void
 }
 
 export const useFlowStore = create<FlowState>()(
@@ -38,9 +42,12 @@ export const useFlowStore = create<FlowState>()(
     (set, get) => ({
       flow: {
         name: '',
+        flowId: "",
         version: '',
         newVersion: '',
         versionId: '',
+        publicDate: "",
+        endDate: "",
         isContinue: false,
         flow: {
           nodeDataArray: [],
@@ -60,8 +67,11 @@ export const useFlowStore = create<FlowState>()(
           flow: {
             name,
             version,
+            flowId: "",
             newVersion: '',
             versionId: '',
+            publicDate: "",
+            endDate: "",
             isContinue: false,
             flow: {
               nodeDataArray: [],
@@ -82,9 +92,12 @@ export const useFlowStore = create<FlowState>()(
         set((state) => ({
           flow: {
             name: payload.name ?? state.flow.name,
+            flowId: payload.flowId ?? state.flow.flowId,
             version: payload.version ?? state.flow.version,
             newVersion: payload.newVersion ?? state.flow.newVersion,
             versionId: payload.versionId ?? state.flow.versionId,
+            publicDate: payload.publicDate ?? state.flow.publicDate,
+            endDate: payload.endDate ?? state.flow.endDate,
             isContinue: payload.isContinue ?? state.flow.isContinue,
             flow: payload.flow ?? {}
           }
@@ -108,6 +121,16 @@ export const useFlowStore = create<FlowState>()(
             flow: {
               ...state.flow.flow,
               linkDataArray: links
+            }
+          }
+        })),
+      pushLinkData: (link) =>
+        set((state) => ({
+          flow: {
+            ...state.flow,
+            flow: {
+              ...state.flow.flow,
+              linkDataArray: [...state.flow.flow.linkDataArray, link]
             }
           }
         })),

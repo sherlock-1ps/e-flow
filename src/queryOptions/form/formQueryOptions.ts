@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { changeRoleAccount, createOperator, fetchAccount, searchAccount, updateStatusAccount } from '@/app/sevices/account/account';
-import { changeNameFolder, changeNameImage, createApi, createFlow, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFlow, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchFlow, fetchForm, fetchMedia, fetchVariable, getFlow, getForm, getUploadFile, updateApi, updateDateFlow, updateDateForm, updateFile, updateForm, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
+import { changeNameFolder, changeNameImage, createApi, createFlow, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFlow, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchFlow, fetchForm, fetchMedia, fetchVariable, getFlow, getForm, getUploadFile, updateApi, updateDateFlow, updateDateForm, updateFile, updateFlow, updateForm, updateVersion, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 
@@ -394,10 +394,42 @@ export const useCreateFlowQueryOption = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["flow"] });
     },
+  });
+};
+
+export const useUpdateFlowQueryOption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateFlow,
+    onError: (error) => {
+      console.error("Error update flow:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["flow"] });
+    },
 
 
   });
 };
+
+export const useUpdateVersionFlowQueryOption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateVersion,
+    onError: (error) => {
+      console.error("Error update version flow:", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["flow"] });
+    },
+
+
+  });
+};
+
+
 
 export const useGetFlowQueryOption = () => {
 

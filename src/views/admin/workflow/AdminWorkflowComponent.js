@@ -10,9 +10,14 @@ import ActivityFlowBar from '@components/workflow/propertyBar/ActivityFlowBar'
 import ApiFlowBar from '@components/workflow/propertyBar/ApiFlowBar'
 import ConditionFlowBar from '@components/workflow/propertyBar/ConditionFlowBar'
 import PathFlowBar from '@components/workflow/propertyBar/PathFlowBar'
+import StartFlowBar from '@components/workflow/propertyBar/StartFlowBar'
 import NavBarFlow from '@components/workflow/navBar/NavBarFlow'
 import { toast } from 'react-toastify'
-import { useCreateFlowQueryOption } from '@/queryOptions/form/formQueryOptions'
+import {
+  useCreateFlowQueryOption,
+  useUpdateFlowQueryOption,
+  useUpdateVersionFlowQueryOption
+} from '@/queryOptions/form/formQueryOptions'
 
 export default function AdminWorkflowComponent() {
   const flow = useFlowStore(state => state.flow)
@@ -21,8 +26,11 @@ export default function AdminWorkflowComponent() {
   const setMyDiagram = useFlowStore(state => state.setMyDiagram)
   const setNodeDataArray = useFlowStore(state => state.setNodeDataArray)
   const setLinkDataArray = useFlowStore(state => state.setLinkDataArray)
+  const clearSelectedField = useFlowStore(state => state.clearSelectedField)
   const updateFlowNodeText = useFlowStore(state => state.updateFlowNodeText)
-  const { mutateAsync } = useCreateFlowQueryOption()
+  const { mutateAsync: callCreateFlow } = useCreateFlowQueryOption()
+  const { mutateAsync: callUpdateFlow } = useUpdateFlowQueryOption()
+  const { mutateAsync: callUpdateVersionFlow } = useUpdateVersionFlowQueryOption()
 
   const router = useRouter()
   const { lang: locale } = useParams()
@@ -36,9 +44,11 @@ export default function AdminWorkflowComponent() {
     if (!window.go || !diagramRef.current) return
     const diagram = window.go.Diagram.fromDiv(diagramRef.current)
     diagram.model = window.go.Model.fromJson(JSON.stringify(flow.flow))
+    diagram.model.linkFromPortIdProperty = 'fromPort'
+    diagram.model.linkToPortIdProperty = 'toPort'
   }
 
-  const save = async () => {
+  const createFlow = async () => {
     if (!window.go || !diagramRef.current) return
 
     const diagram = window.go.Diagram.fromDiv(diagramRef.current)
@@ -65,7 +75,7 @@ export default function AdminWorkflowComponent() {
     }
 
     try {
-      const response = await mutateAsync(request)
+      const response = await callCreateFlow(request)
       if (response?.code === 'SUCCESS') {
         toast.success('บันทึกโฟลว์สำเร็จ!', { autoClose: 3000 })
         router.push(`/${locale}/workflow/dashboard`)
@@ -75,6 +85,114 @@ export default function AdminWorkflowComponent() {
       toast.error('บันทึกโฟลว์ล้มเหลว!', { autoClose: 3000 })
     }
   }
+
+  const updateVersionFlow = async () => {
+    if (!window.go || !diagramRef.current) return
+
+    const diagram = window.go.Diagram.fromDiv(diagramRef.current)
+
+    const nodeDataArray = diagram.model.nodeDataArray.map(n => ({ ...n }))
+
+    const linkDataArray = diagram.model.linkDataArray.map(l => {
+      const cloned = { ...l }
+      if (l.points && typeof l.points.toArray === 'function') {
+        cloned.points = l.points.toArray().flatMap(pt => [pt.x, pt.y])
+      }
+      return cloned
+    })
+
+    const request = {
+      id: flow?.flowId,
+      name: flow?.name,
+      versions: [
+        {
+          version: flow?.newVersion,
+          public_date: flow?.publicDate,
+          end_date: flow?.endDate,
+          nodeDataArray,
+          linkDataArray
+        }
+      ]
+    }
+
+    try {
+      const response = await callUpdateVersionFlow(request)
+      if (response?.code === 'SUCCESS') {
+        toast.success('บันทึกเวอร์ชั่นใหม่โฟลว์สำเร็จ!', { autoClose: 3000 })
+        router.push(`/${locale}/workflow/dashboard`)
+      }
+    } catch (error) {
+      console.error('save error', error)
+      toast.error('บันทึกเวอร์ชั่นใหม่โฟลว์ล้มเหลว!', { autoClose: 3000 })
+    }
+  }
+
+  const updateFlow = async () => {
+    if (!window.go || !diagramRef.current) return
+
+    const diagram = window.go.Diagram.fromDiv(diagramRef.current)
+
+    const nodeDataArray = diagram.model.nodeDataArray.map(n => ({ ...n }))
+
+    const linkDataArray = diagram.model.linkDataArray.map(l => {
+      const cloned = { ...l }
+      if (l.points && typeof l.points.toArray === 'function') {
+        cloned.points = l.points.toArray().flatMap(pt => [pt.x, pt.y])
+      }
+      return cloned
+    })
+
+    const request = {
+      id: flow?.flowId,
+      name: flow?.name,
+      versions: [
+        {
+          id: flow?.versionId,
+          nodeDataArray,
+          linkDataArray
+        }
+      ]
+    }
+
+    try {
+      const response = await callUpdateFlow(request)
+      if (response?.code === 'SUCCESS') {
+        toast.success('บันทึกโฟลว์สำเร็จ!', { autoClose: 3000 })
+        router.push(`/${locale}/workflow/dashboard`)
+      }
+    } catch (error) {
+      console.error('save error', error)
+      toast.error('บันทึกโฟลว์ล้มเหลว!', { autoClose: 3000 })
+    }
+  }
+
+  const handleSaveLinkLocal = () => {
+    if (!window.go || !diagramRef.current) return
+
+    const diagram = window.go.Diagram.fromDiv(diagramRef.current)
+
+    const nodeDataArray = diagram.model.nodeDataArray.map(n => ({ ...n }))
+
+    const linkDataArray = diagram.model.linkDataArray.map(l => {
+      const cloned = { ...l }
+      if (l.points && typeof l.points.toArray === 'function') {
+        cloned.points = l.points.toArray().flatMap(pt => [pt.x, pt.y])
+      }
+      return cloned
+    })
+
+    setLinkDataArray(linkDataArray)
+  }
+
+  const handleSaveNodeLocal = () => {
+    if (!window.go || !diagramRef.current) return
+
+    const diagram = window.go.Diagram.fromDiv(diagramRef.current)
+    const nodeDataArray = diagram.model.nodeDataArray.map(n => ({ ...n }))
+
+    setNodeDataArray(nodeDataArray)
+  }
+
   useEffect(() => {
     if (!diagramRef.current || !paletteRef.current || !window.go) return
 
@@ -309,6 +427,56 @@ export default function AdminWorkflowComponent() {
         )
     }
 
+    const nodeTemplatePanelStart = (option, isEdit = true) => {
+      return new go.Node('Spot', {
+        locationSpot: go.Spot.Center,
+        selectable: true,
+        // resizable: true,
+        // rotatable: true,
+        selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
+        resizeObjectName: 'PANEL',
+        resizeAdornmentTemplate: nodeResizeAdornmentTemplate,
+        rotateAdornmentTemplate: nodeRotateAdornmentTemplate,
+        mouseEnter: (e, node) => showSmallPorts(node, true),
+        mouseLeave: (e, node) => showSmallPorts(node, false)
+      })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('angle')
+        .add(
+          new go.Panel('Auto', { name: 'PANEL' })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .add(
+              new go.Shape('Rectangle', {
+                portId: '', // the default port: if no spot on link data, use closest side
+                cursor: 'pointer',
+                fill: 'white',
+                strokeWidth: 2
+
+                // fromLinkable: true,
+                // toLinkable: true,
+
+                // fromLinkableDuplicates: true,
+                // toLinkableDuplicates: true,
+                // fromLinkableSelfNode: true,
+                // toLinkableSelfNode: true,
+
+                // ...option
+              })
+                .bind('figure')
+                .bind('fill'),
+              new go.TextBlock({
+                font: 'bold 10pt Helvetica, Arial, sans-serif',
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.Wrap.Fit,
+                editable: isEdit
+              }).bindTwoWay('text')
+            ),
+
+          makePort('B', go.Spot.Bottom, option)
+        )
+    }
+
     const imgDisplay = new go.Panel(go.Panel.Table, {
       background: 'transparent',
       cursor: 'Pointer',
@@ -429,10 +597,58 @@ export default function AdminWorkflowComponent() {
         )
     }
 
+    const nodeTemplatePanelCommend = (option, isEdit = true) => {
+      return new go.Node('Spot', {
+        locationSpot: go.Spot.Center,
+        selectable: true,
+        // resizable: true,
+        // rotatable: true,
+        selectionAdornmentTemplate: nodeSelectionAdornmentTemplate,
+        resizeObjectName: 'PANEL',
+        resizeAdornmentTemplate: nodeResizeAdornmentTemplate,
+        rotateAdornmentTemplate: nodeRotateAdornmentTemplate,
+        mouseEnter: (e, node) => showSmallPorts(node, true),
+        mouseLeave: (e, node) => showSmallPorts(node, false)
+      })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('angle')
+        .add(
+          new go.Panel('Auto', { name: 'PANEL' })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .add(
+              new go.Shape('Rectangle', {
+                portId: '', // the default port: if no spot on link data, use closest side
+                cursor: 'pointer',
+                fill: 'white',
+                strokeWidth: 2
+
+                // fromLinkable: true,
+                // toLinkable: true,
+
+                // fromLinkableDuplicates: true,
+                // toLinkableDuplicates: true,
+                // fromLinkableSelfNode: true,
+                // toLinkableSelfNode: true,
+
+                // ...option
+              })
+                .bind('figure')
+                .bind('fill'),
+              new go.TextBlock({
+                font: 'bold 10pt Helvetica, Arial, sans-serif',
+                margin: 8,
+                maxSize: new go.Size(160, NaN),
+                wrap: go.Wrap.Fit,
+                editable: isEdit
+              }).bindTwoWay('text')
+            )
+        )
+    }
+
     const templmap = new go.Map()
     templmap.add(
       'start',
-      nodeTemplatePanel(
+      nodeTemplatePanelStart(
         {
           fromLinkableDuplicates: false,
           toLinkableDuplicates: false,
@@ -463,7 +679,7 @@ export default function AdminWorkflowComponent() {
         false
       )
     )
-    templmap.add('comment', nodeTemplatePanel({}))
+    templmap.add('comment', nodeTemplatePanelCommend({}))
     templmap.add('activity', nodeTemplatePanelActivity({}))
     templmap.add('api', nodeTemplatePanelActivity({}))
 
@@ -547,28 +763,52 @@ export default function AdminWorkflowComponent() {
       if (e.change === go.ChangedEvent.Remove) {
         if (e.modelChange === 'nodeDataArray') {
           const deletedNode = e.oldValue
-          console.log('🗑️ Node deleted naja:', deletedNode)
+          // console.log('🗑️ Node deleted naja:', deletedNode)
 
           const updatedNodes = myDiagram.model.nodeDataArray
-          useFlowStore.getState().setNodeDataArray(updatedNodes)
+          setNodeDataArray(updatedNodes)
 
-          const currentSelected = useFlowStore.getState().selectedField
-          if (currentSelected?.key === deletedNode?.key) {
-            useFlowStore.getState().clearSelectedField()
-          }
+          clearSelectedField()
         }
 
         if (e.modelChange === 'linkDataArray') {
           const deletedLink = e.oldValue
-          console.log('🗑️ Link deleted naja:', deletedLink)
 
           const updatedLinks = myDiagram.model.linkDataArray
-          useFlowStore.getState().setLinkDataArray(updatedLinks)
+          setLinkDataArray(updatedLinks)
 
-          const currentSelected = useFlowStore.getState().selectedField
-          if (currentSelected?.from === deletedLink?.from && currentSelected?.to === deletedLink?.to) {
-            useFlowStore.getState().clearSelectedField()
+          if (deletedLink) {
+            if (selectedField?.from == deletedLink?.from && selectedField?.to == deletedLink?.to) {
+              clearSelectedField()
+            }
           }
+        }
+      }
+
+      if (e.change === go.ChangedEvent.Insert) {
+        if (e.modelChange === 'nodeDataArray') {
+          // console.log('Node added:', e.newValue)
+          handleSaveNodeLocal()
+        }
+
+        if (e.modelChange === 'linkDataArray') {
+          // console.log('Link added:', e.newValue)
+          handleSaveLinkLocal()
+        }
+      }
+
+      if (e.change === go.ChangedEvent.Property) {
+        if (e.propertyName === 'location') {
+          // console.log('📍 Node moved to:', e.newValue)
+          handleSaveNodeLocal()
+        }
+        if (e.propertyName === 'points') {
+          // console.log('🔗 Link shape changed:', e.object)
+          handleSaveLinkLocal()
+        }
+        if (e.propertyName === 'form') {
+          console.log('form updated:', e.newValue)
+          handleSaveNodeLocal()
         }
       }
     })
@@ -685,8 +925,7 @@ export default function AdminWorkflowComponent() {
       }
       if (!(node instanceof go.Node)) return
       var data = node.data
-      console.log('777', data)
-      setSelectedField(data)
+      setSelectedField(node)
 
       let selectedOutCome = []
       node.linksConnected.map(a => {
@@ -729,6 +968,8 @@ export default function AdminWorkflowComponent() {
         return <ApiFlowBar />
       case 'condition':
         return <ConditionFlowBar />
+      case 'start':
+        return <StartFlowBar />
 
       default:
         return
@@ -796,11 +1037,14 @@ export default function AdminWorkflowComponent() {
         </div>
 
         {/* Diagram Canvas */}
-        <div className='relative border h-full flex-1'>
-          <div className='absolute top-0 left-0 right-0 p-4 flex items-center justify-between h-[72px] rounded-lg shadow-lg bg-white m-10 z-10'>
-            <NavBarFlow onSave={save} />
+        <div className='relative border h-full flex-1 flex flex-col '>
+          <div className=' p-4 flex items-center justify-between h-[72px] rounded-lg shadow-lg bg-white  z-10'>
+            <NavBarFlow onCreate={createFlow} onUpdate={updateFlow} onUpdateVersion={updateVersionFlow} />
           </div>
-          <div ref={diagramRef} className='h-full flex-1' />
+          {/* <div className='absolute top-0 left-0 right-0 p-4 flex items-center justify-between h-[72px] rounded-lg shadow-lg bg-white my-4 mx-6 z-10'>
+            <NavBarFlow onSave={save} />
+          </div> */}
+          <div ref={diagramRef} className='h-full flex-1 border' />
           {/* <button
             onClick={() => {
               save()

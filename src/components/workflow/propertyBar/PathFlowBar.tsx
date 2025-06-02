@@ -37,7 +37,27 @@ const PathFlowBar = () => {
     }
   }, [selectedField])
 
-  const handleDelete = () => {}
+  const handleDelete = () => {
+    if (!myDiagram || !selectedField) return
+
+    const isLink = 'from' in selectedField && 'to' in selectedField
+
+    myDiagram.startTransaction('delete selected')
+
+    if (isLink) {
+      // 🔥 ลบ Link
+      const link = myDiagram.findLinkForData(selectedField)
+      console.log('link', link)
+
+      if (link) {
+        myDiagram.remove(link)
+      }
+    }
+
+    myDiagram.commitTransaction('delete selected')
+
+    clearSelectedField()
+  }
 
   const handleTextChange = (e: any) => {
     const newText = e.target.value
