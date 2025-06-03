@@ -1,4 +1,5 @@
 import Axios from "@/libs/axios/axios";
+import AxiosExternal from "@/libs/axios/axiosExternal";
 import { axiosErrorHandler } from "@/utils/axiosErrorHandler";
 
 type VariableValue = {
@@ -565,6 +566,73 @@ export const getFlow = async (id: number) => {
     throw e
   }
 }
+
+export const getPersonList = async ({
+  page,
+  pageSize,
+  f_person_id = '',
+  f_name = ''
+}: {
+  page: number
+  pageSize: number
+  f_person_id?: string
+  f_name?: string
+}) => {
+  try {
+    const payload = { page, limit: pageSize, f_person_id, f_name }
+    const response = await AxiosExternal.post("/api/service/core/get-person-lists", payload)
+    return response.data
+  } catch (error) {
+    console.error("Error get person list:", error)
+    const e = axiosErrorHandler(error, "/api/service/core/get-person-lists")
+    throw e
+  }
+}
+
+export const getPositionList = async ({
+  page,
+  pageSize,
+  f_position_id = '',
+  f_position_name = ''
+}: {
+  page: number
+  pageSize: number
+  f_position_id?: string
+  f_position_name?: string
+}) => {
+  try {
+    const payload = { page, limit: pageSize, f_position_id, f_position_name }
+    const response = await AxiosExternal.post("/api/service/core/get-position-lists", payload)
+    return response.data
+  } catch (error) {
+    console.error("Error get position list:", error)
+    const e = axiosErrorHandler(error, "/api/service/core/get-position-lists")
+    throw e
+  }
+}
+
+export const getDepartmentList = async ({
+  page,
+  pageSize,
+  f_dept_id = '',
+  department_name = ''
+}: {
+  page: number
+  pageSize: number
+  f_dept_id?: string
+  department_name?: string
+}) => {
+  try {
+    const payload = { page, limit: pageSize, f_dept_id, department_name }
+    const response = await AxiosExternal.post("/api/service/core/get-department-lists", payload)
+    return response.data
+  } catch (error) {
+    console.error("Error get department list:", error)
+    const e = axiosErrorHandler(error, "/api/service/core/get-department-lists")
+    throw e
+  }
+}
+
 
 
 

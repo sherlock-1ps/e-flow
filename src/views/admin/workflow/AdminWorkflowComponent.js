@@ -245,6 +245,7 @@ export default function AdminWorkflowComponent() {
     })
     myDiagram.model.linkFromPortIdProperty = 'fromPort'
     myDiagram.model.linkToPortIdProperty = 'toPort'
+    myDiagram.grid.gridCellSize = new go.Size(15, 15)
 
     setMyDiagram(myDiagram)
 
@@ -934,7 +935,7 @@ export default function AdminWorkflowComponent() {
         }
       })
 
-      console.log('linkDataArray', myDiagram.model.linkDataArray)
+      // console.log('linkDataArray', myDiagram.model.linkDataArray)
       // console.log('Current node list:', myDiagram.model.nodeDataArray)
     }
 

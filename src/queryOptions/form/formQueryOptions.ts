@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 import { changeRoleAccount, createOperator, fetchAccount, searchAccount, updateStatusAccount } from '@/app/sevices/account/account';
-import { changeNameFolder, changeNameImage, createApi, createFlow, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFlow, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchFlow, fetchForm, fetchMedia, fetchVariable, getFlow, getForm, getUploadFile, updateApi, updateDateFlow, updateDateForm, updateFile, updateFlow, updateForm, updateVersion, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
+import { changeNameFolder, changeNameImage, createApi, createFlow, createFolder, createForm, createNewVersionForm, createVariable, deleteApi, deleteFlow, deleteFolder, deleteForm, deleteMedia, deleteUploadFile, deleteVariable, editVariable, fetchApi, fetchFlow, fetchForm, fetchMedia, fetchVariable, getDepartmentList, getFlow, getForm, getPersonList, getPositionList, getUploadFile, updateApi, updateDateFlow, updateDateForm, updateFile, updateFlow, updateForm, updateVersion, uploadFile, uploadMedia } from '@/app/sevices/form/formServices';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 
@@ -438,10 +438,29 @@ export const useGetFlowQueryOption = () => {
     onError: (error) => {
       console.error("Error get flow:", error);
     },
-
-
   });
 };
+
+
+export function useGetPersonExternalQueryOption(page: number, pageSize: number, f_person_id: string, f_name: string) {
+  return useQuery({
+    queryKey: ["person", page, pageSize],
+    queryFn: () => getPersonList({ page, pageSize, f_person_id, f_name }),
+  });
+}
+
+export function useGetPositionExternalQueryOption(page: number, pageSize: number, f_position_id: string, f_position_name: string) {
+  return useQuery({
+    queryKey: ["position", page, pageSize],
+    queryFn: () => getPositionList({ page, pageSize, f_position_id, f_position_name }),
+  });
+}
+export function useGetDepartmentExternalQueryOption(page: number, pageSize: number, f_dept_id: string, department_name: string) {
+  return useQuery({
+    queryKey: ["department", page, pageSize],
+    queryFn: () => getDepartmentList({ page, pageSize, f_dept_id, department_name }),
+  });
+}
 
 
 
