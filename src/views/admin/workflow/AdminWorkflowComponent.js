@@ -875,7 +875,8 @@ export default function AdminWorkflowComponent() {
         {
           text: 'API',
           figure: 'Rectangle',
-          category: 'api'
+          category: 'api',
+          api: null
         },
         {
           text: 'Condition',

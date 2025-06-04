@@ -634,5 +634,25 @@ export const getDepartmentList = async ({
 }
 
 
+export const fetchFormName = async ({ page, pageSize }: { page: number; pageSize: number }) => {
+  try {
+    const response = await Axios.post("/forms/get-name", {
+      page,
+      limit: pageSize,
+    });
+
+    return response.data;
+
+  } catch (error) {
+    console.error("Error fetch form:", error);
+
+    axiosErrorHandler(error, '/forms/get-name')
+    throw error;
+
+  }
+
+};
+
+
 
 

@@ -8,7 +8,7 @@ import CustomTextField from '@/@core/components/mui/TextField'
 import { useDialog } from '@/hooks/useDialog'
 import AddPathFlowDialog from '@/components/dialogs/flow/AddPathFlowDialog'
 import AddSettingPermissionFlowDialog from '@/components/dialogs/flow/AddSettingPermissionFlowDialog'
-import { useFetchFormQueryOption } from '@/queryOptions/form/formQueryOptions'
+import { useFetchFormFlowQueryOption } from '@/queryOptions/form/formQueryOptions'
 import { nanoid } from 'nanoid'
 
 const ActivityFlowBar = () => {
@@ -21,7 +21,7 @@ const ActivityFlowBar = () => {
   const [inputValue, setInputValue] = useState('')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(999)
-  const { data: formList, isPending: pendingFormList } = useFetchFormQueryOption(page, pageSize)
+  const { data: formList, isPending: pendingFormList } = useFetchFormFlowQueryOption(page, pageSize)
 
   function generateUniqueKey() {
     return Date.now() + Math.floor(Math.random() * 1000)
@@ -77,9 +77,9 @@ const ActivityFlowBar = () => {
     if (selectedField) {
       const newLink = Date.now() // Create a unique ID for the new link
 
-      var model = myDiagram.model
+      const model = myDiagram.model
       // var location = selectedNode.data.location.split(' ')
-      var location = selectedField.data.location.split(' ')
+      const location = selectedField.data.location.split(' ')
 
       let linkCount = 0
       selectedField.linksConnected.map((a: any) => {
@@ -97,7 +97,7 @@ const ActivityFlowBar = () => {
           location[0] = String(parseInt(location[0]) - Math.ceil(linkCount / 2) * 150)
         }
       }
-      var newPart = {
+      const newPart = {
         key: generateUniqueKey(),
         text: 'Activity',
         figure: 'Rectangle',

@@ -32,6 +32,24 @@ const mockData = Array.from({ length: 27 }, (_, i) => ({
   type: i % 3 === 0 ? 'บุคคล' : i % 3 === 1 ? 'ตำแหน่ง' : 'หน่วยงาน'
 }))
 
+const filterTypeOption = [
+  {
+    id: 1,
+    key: 'person',
+    name: 'บุคคล'
+  },
+  {
+    id: 2,
+    key: 'position',
+    name: 'ตำแหน่ง'
+  },
+  {
+    id: 3,
+    key: 'department',
+    name: 'หน่วยงาน'
+  }
+]
+
 const DebouncedInput = ({ value: initialValue, onChange, isEng = false, debounce = 550, maxLength, ...props }: any) => {
   const [value, setValue] = useState(initialValue)
 
@@ -75,15 +93,13 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
   const { closeDialog } = useDialog()
 
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(40)
-  const [filterType, setFilterType] = useState('บุคคล')
+  const [pageSize, setPageSize] = useState(100)
+  const [filterType, setFilterType] = useState('person')
   const [searchText, setSearchText] = useState('')
   const [leftList, setLeftList] = useState<any[]>([])
   const [rightList, setRightList] = useState<any[]>([])
-  const [selectedLeft, setSelectedLeft] = useState<number[]>([])
-  const [selectedRight, setSelectedRight] = useState<number[]>([])
-  const [leftPage, setLeftPage] = useState(1)
-  const leftPageSize = 10
+  const [selectedLeft, setSelectedLeft] = useState<any[]>([])
+  const [selectedRight, setSelectedRight] = useState<any[]>([])
 
   const [sortConfig, setSortConfig] = useState<{ key: 'name' | 'type' | null; direction: 'asc' | 'desc' | null }>({
     key: null,
@@ -98,7 +114,16 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
     direction: null
   })
 
-  const { data: personLists } = useGetPersonExternalQueryOption(page, pageSize, '', '')
+  const { data: personLists } = useGetPersonExternalQueryOption(page, pageSize, '', '', {
+    enabled: filterType === 'person'
+  })
+  const { data: positionLists } = useGetPositionExternalQueryOption(page, pageSize, '', '', {
+    enabled: filterType === 'position'
+  })
+
+  const { data: departmentLists } = useGetDepartmentExternalQueryOption(page, pageSize, '', '', {
+    enabled: filterType === 'department'
+  })
 
   const handleSortRight = (key: 'name' | 'type') => {
     setSortConfigRight(prev => {
@@ -150,22 +175,53 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
     }
 
     setLeftList(filtered.filter(i => !rightList.some(r => r.id === i.id)))
-    setLeftPage(1)
   }, [filterType, searchText, sortConfig, rightList])
 
-  const transferSelectedToRight = () => {
-    const toMove = personLists?.items?.data.filter((item: any) => selectedLeft.includes(item.F_PERSON_ID)) || []
+  useEffect(() => {
+    setPage(1)
+  }, [filterType])
 
-    const mapped = toMove.map((item: any) => ({
-      id: item.F_PERSON_ID,
-      name: `${item.F_FIRST_NAME} ${item.F_LAST_NAME}`,
-      type: item.F_POSITION_NAME || '-'
-    }))
+  const transferSelectedToRight = () => {
+    let toMove: any[] = []
+    let mapped: any[] = []
+
+    if (filterType === 'person') {
+      toMove =
+        personLists?.items?.data.filter((item: any) => selectedLeft.some(i => i.F_PERSON_ID === item.F_PERSON_ID)) || []
+      mapped = toMove.map((item: any) => ({
+        id: item.F_PERSON_ID,
+        name: `${item.F_FIRST_NAME} ${item.F_LAST_NAME}`,
+        type: item.F_POSITION_NAME || '-'
+      }))
+    } else if (filterType === 'position') {
+      toMove =
+        positionLists?.items?.data.filter((item: any) =>
+          selectedLeft.some(i => i.F_POSITION_ID === item.F_POSITION_ID)
+        ) || []
+      mapped = toMove.map((item: any) => ({
+        id: item.F_POSITION_ID,
+        name: item.F_POSITION_NAME,
+        type: '-'
+      }))
+    } else if (filterType === 'department') {
+      toMove =
+        departmentLists?.items?.data.filter((item: any) => selectedLeft.some(i => i.F_DEPT_ID === item.F_DEPT_ID)) || []
+      mapped = toMove.map((item: any) => ({
+        id: item.F_DEPARTMENT_ID,
+        name: item.F_DEPARTMENT_NAME,
+        type: '-'
+      }))
+    }
 
     const updatedRight = [...rightList, ...mapped.filter((i: any) => !rightList.some(r => r.id === i.id))]
+
+    console.log('updatedRight', updatedRight)
+
     setRightList(updatedRight)
     setSelectedLeft([])
   }
+
+  console.log('selectedLeft', selectedLeft)
 
   const transferSelectedToLeft = () => {
     const remaining = rightList.filter(item => !selectedRight.includes(item.id))
@@ -173,8 +229,30 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
     setSelectedRight([])
   }
 
-  const toggleLeftSelect = (id: number) => {
-    setSelectedLeft(prev => (prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]))
+  const toggleLeftSelect = (item: any) => {
+    let newItem
+    let key
+
+    if (filterType === 'person') {
+      newItem = { F_PERSON_ID: item.F_PERSON_ID }
+      key = 'F_PERSON_ID'
+    } else if (filterType === 'position') {
+      newItem = { F_POSITION_ID: item.F_POSITION_ID }
+      key = 'F_POSITION_ID'
+    } else if (filterType === 'department') {
+      newItem = { F_DEPT_ID: item.F_DEPT_ID }
+      key = 'F_DEPT_ID'
+    }
+
+    console.log('newItem', newItem)
+    console.log('key', key)
+
+    if (!newItem || !key) return
+
+    setSelectedLeft(prev => {
+      const exists = prev.some(i => i[key] === newItem[key])
+      return exists ? prev.filter(i => i[key] !== newItem[key]) : [...prev, newItem]
+    })
   }
 
   const toggleRightSelect = (id: number) => {
@@ -210,8 +288,8 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
       <Grid item xs={12} className='px-6 space-y-4'>
         <FormControl component='fieldset'>
           <RadioGroup row value={filterType} onChange={e => setFilterType(e.target.value)}>
-            {['บุคคล', 'ตำแหน่ง', 'หน่วยงาน'].map(option => (
-              <FormControlLabel key={option} value={option} control={<Radio />} label={option} />
+            {filterTypeOption.map(option => (
+              <FormControlLabel key={option.id} value={option.key} control={<Radio />} label={option.name} />
             ))}
           </RadioGroup>
         </FormControl>
@@ -247,35 +325,81 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
                 className='w-2/5 text-left px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 border border-gray-300 ml-2'
                 onClick={() => handleSort('type')}
               >
-                ประเภท{' '}
+                ตำแหน่ง{' '}
                 {sortConfig.key === 'type' &&
                   (sortConfig.direction === 'asc' ? '▲' : sortConfig.direction === 'desc' ? '▼' : '')}
               </button>
             </div>
             <div className='w-full border border-gray-300 rounded overflow-y-auto space-y-2 p-2 h-[380px]'>
-              {personLists?.items?.data?.map((item: any, index: number) => {
-                const isMoved = rightList.some(r => r.id === item.F_PERSON_ID)
+              {filterType === 'person' &&
+                personLists?.items?.data?.map((item: any, index: number) => {
+                  const isMoved = rightList.some(r => r.id === item.F_PERSON_ID)
+                  return (
+                    <div key={index} className='flex items-center'>
+                      <Checkbox
+                        checked={selectedLeft.some(i => i.F_PERSON_ID === item.F_PERSON_ID)}
+                        disabled={isMoved}
+                        onChange={() => toggleLeftSelect(item)}
+                      />
+                      <Typography className={`w-2/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
+                        {item.F_FIRST_NAME} {item.F_LAST_NAME}
+                      </Typography>
+                      <Typography className={`w-2/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
+                        {item.F_POSITION_NAME}
+                      </Typography>
+                    </div>
+                  )
+                })}
 
-                return (
-                  <div key={index} className='flex items-center'>
-                    <Checkbox
-                      checked={selectedLeft.includes(item.F_PERSON_ID)}
-                      disabled={isMoved}
-                      onChange={() => toggleLeftSelect(item.F_PERSON_ID)}
-                    />
-                    <Typography className={`w-2/5 ${isMoved ? 'text-textDisabled' : ' text-black'}`}>
-                      {item.F_FIRST_NAME} {item.F_LAST_NAME}
-                    </Typography>
-                    <Typography className={`w-2/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
-                      {item.F_POSITION_NAME}
-                    </Typography>
-                  </div>
-                )
-              })}
+              {filterType === 'position' &&
+                positionLists?.items?.data?.map((item: any, index: number) => {
+                  const isMoved = rightList.some(r => r.id === item.F_POSITION_ID)
+                  return (
+                    <div key={index} className='flex items-center'>
+                      <Checkbox
+                        checked={selectedLeft.some(i => i.F_POSITION_ID === item.F_POSITION_ID)}
+                        disabled={isMoved}
+                        onChange={() => toggleLeftSelect(item)}
+                      />
+                      <Typography className={`w-1/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
+                        {item.F_POSITION_ID}
+                      </Typography>
+                      <Typography className={`w-3/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
+                        {item.F_POSITION_NAME}
+                      </Typography>
+                    </div>
+                  )
+                })}
+
+              {filterType === 'department' &&
+                departmentLists?.items?.data?.map((item: any, index: number) => {
+                  const isMoved = rightList.some(r => r.id === item.F_DEPT_ID)
+                  return (
+                    <div key={index} className='flex items-center'>
+                      <Checkbox
+                        checked={selectedLeft.some(i => i.F_DEPT_ID === item.F_DEPT_ID)}
+                        disabled={isMoved}
+                        onChange={() => toggleLeftSelect(item)}
+                      />
+                      <Typography className={`w-1/5 ${isMoved ? 'text-textDisabled' : 'text-black mr-2'}`}>
+                        {item.F_DEPT_ID}
+                      </Typography>
+                      <Typography className={`w-3/5 ${isMoved ? 'text-textDisabled' : 'text-black'}`}>
+                        {item.DEPARTMENT_NAME ?? '-'}
+                      </Typography>
+                    </div>
+                  )
+                })}
             </div>
             <div className='flex justify-center mt-2'>
               <Pagination
-                count={personLists?.items?.last_page ?? 1}
+                count={
+                  filterType === 'person'
+                    ? (personLists?.items?.last_page ?? 1)
+                    : filterType === 'position'
+                      ? (positionLists?.items?.last_page ?? 1)
+                      : (departmentLists?.items?.last_page ?? 1)
+                }
                 page={page}
                 onChange={(_, value) => setPage(value)}
                 size='small'
@@ -323,7 +447,7 @@ const AddSettingPermissionFlowDialog = ({ id }: AddSettingPermissionFlowDialogPr
                 className='w-2/5 text-left px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 border border-gray-300 ml-2'
                 onClick={() => handleSortRight('type')}
               >
-                ประเภท{' '}
+                ตำแหน่ง{' '}
                 {sortConfigRight.key === 'type' &&
                   (sortConfigRight.direction === 'asc' ? '▲' : sortConfigRight.direction === 'desc' ? '▼' : '')}
               </button>

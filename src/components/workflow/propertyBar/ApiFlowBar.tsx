@@ -10,6 +10,7 @@ import { useDialog } from '@/hooks/useDialog'
 import AddPathFlowDialog from '@/components/dialogs/flow/AddPathFlowDialog'
 import AddSettingPermissionFlowDialog from '@/components/dialogs/flow/AddSettingPermissionFlowDialog'
 import { nanoid } from 'nanoid'
+import SettingApiFlowDialog from '@/components/dialogs/flow/SettingApiFlowDialog'
 
 const ApiFlowBar = () => {
   const { showDialog } = useDialog()
@@ -19,6 +20,8 @@ const ApiFlowBar = () => {
   const selectedField = useFlowStore(state => state.selectedField)
   const clearSelectedField = useFlowStore(state => state.clearSelectedField)
   const [inputValue, setInputValue] = useState('')
+
+  const getFlow = flow?.flow?.nodeDataArray.find(item => item.key === selectedField?.data?.key)
 
   useEffect(() => {
     if (selectedField?.key && myDiagram && flow) {
@@ -57,15 +60,17 @@ const ApiFlowBar = () => {
     myDiagram.model.commitTransaction('update text')
   }
 
+  console.log('selectedField123', selectedField?.data)
+
   function addLinkToCurrentNode() {
     // const selectedNode = myDiagram.selection.first()
 
     if (selectedField) {
       const newLink = Date.now() // Create a unique ID for the new link
 
-      var model = myDiagram.model
+      const model = myDiagram.model
       // var location = selectedNode.data.location.split(' ')
-      var location = selectedField.data.location.split(' ')
+      const location = selectedField.data.location.split(' ')
 
       let linkCount = 0
       selectedField.linksConnected.map((a: any) => {
@@ -83,7 +88,7 @@ const ApiFlowBar = () => {
           location[0] = String(parseInt(location[0]) - Math.ceil(linkCount / 2) * 150)
         }
       }
-      var newPart = {
+      const newPart = {
         key: generateUniqueKey(),
         text: 'Activity',
         figure: 'Rectangle',
@@ -147,15 +152,20 @@ const ApiFlowBar = () => {
           <CustomTextField label='ข้อความกำกับ' value={inputValue} onChange={handleTextChange} />
         </div>
 
-        <div className='w-full flex flex-col pb-4 border-b'>
-          <Autocomplete
-            fullWidth
-            options={[]}
-            getOptionLabel={option => ''}
-            value={''}
-            onChange={(event, newValue) => {}}
-            renderInput={params => <CustomTextField {...params} label='เลือก API' placeholder='เลือก...' />}
-          />
+        <div className='w-full flex flex-col pb-4 border-b gap-2'>
+          {getFlow?.api ? <Typography>มีการตั้งค่า API</Typography> : <Typography>ยังไม่มีการตั้งค่า API</Typography>}
+          <Button
+            variant='contained'
+            onClick={() => {
+              showDialog({
+                id: 'SettingApiFlowDialog',
+                component: <SettingApiFlowDialog id='SettingApiFlowDialog' />,
+                size: 'md'
+              })
+            }}
+          >
+            ตั้งค่า API
+          </Button>
         </div>
 
         <div className='w-full flex items-center pb-4 border-b gap-4 justify-between'>
