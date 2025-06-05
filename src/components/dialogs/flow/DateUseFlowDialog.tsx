@@ -22,6 +22,7 @@ const DateUseFlowDialog = ({ id, data }: DateUseProps) => {
   const [endDatetime, setEndDatetime] = useState<Date | null | undefined>(null)
   const { mutateAsync } = useUpdateDateFlowQueryOption()
 
+  const formatToUTC = (date: Date) => date.toISOString().replace(/\.\d{3}Z$/, 'Z')
   const handleSubmit = async () => {
     try {
       const request = {
@@ -29,8 +30,8 @@ const DateUseFlowDialog = ({ id, data }: DateUseProps) => {
         versions: [
           {
             id: data?.version?.[0]?.id,
-            public_date: startDatetime?.toISOString() ?? '',
-            end_date: endDatetime?.toISOString() ?? ''
+            public_date: startDatetime ? formatToUTC(startDatetime) : '',
+            end_date: endDatetime ? formatToUTC(endDatetime) : ''
           }
         ]
       }

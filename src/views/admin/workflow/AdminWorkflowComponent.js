@@ -951,7 +951,7 @@ export default function AdminWorkflowComponent() {
   }, [goReady])
 
   useEffect(() => {
-    if (flow?.flow?.linkDataArray.length > 0 || flow?.flow?.nodeDataArray.length > 0) {
+    if (flow?.flow?.linkDataArray?.length > 0 || flow?.flow?.nodeDataArray?.length > 0) {
       setTimeout(() => {
         load()
       }, 150)

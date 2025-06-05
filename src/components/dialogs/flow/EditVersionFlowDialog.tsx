@@ -47,6 +47,8 @@ const EditVersionFlowDialog = ({ id, onClick, data }: EditVersionProps) => {
     }
   }
 
+  const formatToUTC = (date: Date) => date.toISOString().replace(/\.\d{3}Z$/, 'Z')
+
   const handleClick = async () => {
     if (!startDatetime || !endDatetime || !version) {
       toast.error('กรุณาเลือกวันและเวลาให้ครบถ้วน', { autoClose: 3000 })
@@ -64,8 +66,8 @@ const EditVersionFlowDialog = ({ id, onClick, data }: EditVersionProps) => {
           name: data?.name,
           version: response?.result?.data?.flow_version?.version,
           newVersion: version,
-          publicDate: startDatetime.toISOString(),
-          endDate: endDatetime.toISOString(),
+          publicDate: formatToUTC(startDatetime),
+          endDate: formatToUTC(endDatetime),
           flow: {
             ...response?.result?.data?.flow
           }

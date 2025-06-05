@@ -66,7 +66,7 @@ const ApiFlowBar = () => {
     // const selectedNode = myDiagram.selection.first()
 
     if (selectedField) {
-      const newLink = Date.now() // Create a unique ID for the new link
+      const newLink = Date.now()
 
       const model = myDiagram.model
       // var location = selectedNode.data.location.split(' ')
@@ -106,7 +106,6 @@ const ApiFlowBar = () => {
         to: newPart.key,
         text: nanoid(4)
       }
-      // Add the new link to the diagram's model
       // pushLinkData(newLinkData)
       myDiagram.model.addLinkData(newLinkData)
     } else {
